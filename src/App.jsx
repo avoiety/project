@@ -13,8 +13,9 @@ const profileOptions = {
   skin: ["peach", "tan", "deep"],
   hair: ["bob", "bang", "curl"],
   outfit: ["mint", "pink", "sun"],
+  accessory: ["none", "heart", "star"],
 };
-const defaultProfile = { skin: "peach", hair: "bob", outfit: "mint" };
+const defaultProfile = { skin: "peach", hair: "bob", outfit: "mint", accessory: "heart" };
 const defaultItems = [
   { id: "starter-shirt", name: "크림 코튼 셔츠", category: "셔츠", color: "흰색", occasions: ["일상", "출근", "약속"], image: "https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&w=600&q=80" },
   { id: "starter-jeans", name: "빈티지 블루 데님", category: "바지", color: "파랑", occasions: ["일상", "약속", "활동"], image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=600&q=80" },
@@ -154,10 +155,10 @@ function AccountGate({ account, onCreate, onUnlock }) {
     setBusy(false);
   }
 
-  return <main className="account-screen"><section className="account-card panel"><div className="account-character"><Character profile={defaultProfile} /></div><div><p className="eyebrow"><i /> LOCAL WARDROBE LOCK</p><h1>{isNew ? "나만의 옷장을\n만들어 볼까요?" : `${account.nickname}의\n옷장에 돌아왔어요!`}</h1><p className="account-description">{isNew ? "귀여운 캐릭터와 함께 나만의 스타일 공간을 시작해요." : "PIN을 입력하면 나만의 옷장과 캐릭터를 불러와요."}</p></div><form onSubmit={submit}><label>닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" autoComplete="username" placeholder="예: 무드냥" /></label><label>PIN <small>숫자 4~8자리</small><input type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete={isNew ? "new-password" : "current-password"} placeholder="PIN 입력" /></label>{isNew && <label>PIN 다시 입력<input type="password" inputMode="numeric" value={confirmPin} onChange={(event) => setConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="PIN 다시 입력" /></label>}{error && <p className="account-error" role="alert">{error}</p>}<button className="pixel-button" disabled={busy} type="submit">{busy ? "SAVING..." : isNew ? "내 옷장 만들기" : "내 옷장 열기"}</button></form><p className="account-note">PIN 원문은 저장하지 않고, 해시값만 저장합니다. 이 기능은 같은 브라우저에서만 사용할 수 있어요.</p></section></main>;
+  return <main className="account-screen"><section className="account-card panel"><div className="account-character"><Character profile={account?.profile || defaultProfile} /></div><div><p className="eyebrow"><i /> LOCAL WARDROBE LOCK</p><h1>{isNew ? "나만의 옷장을\n만들어 볼까요?" : `${account.nickname}의\n옷장에 돌아왔어요!`}</h1><p className="account-description">{isNew ? "귀여운 캐릭터와 함께 나만의 스타일 공간을 시작해요." : "나만의 옷장과 캐릭터를 불러와요."}</p></div><form onSubmit={submit}><label>닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" autoComplete="username" placeholder="예: 강무드" /></label><label>PIN <small>숫자 4~8자리</small><input type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete={isNew ? "new-password" : "current-password"} placeholder="PIN 입력" /></label>{isNew && <label>PIN 다시 입력<input type="password" inputMode="numeric" value={confirmPin} onChange={(event) => setConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="PIN 다시 입력" /></label>}{error && <p className="account-error" role="alert">{error}</p>}<button className="pixel-button" disabled={busy} type="submit">{busy ? "SAVING..." : isNew ? "내 옷장 만들기" : "내 옷장 열기"}</button></form><p className="account-note">계정 정보는 같은 브라우저 내에서만 사용할 수 있어요.</p></section></main>;
 }
 
-function Character({ profile, small = false }) { return <span className={`character ${small ? "character-small" : ""} skin-${profile.skin} hair-${profile.hair} outfit-${profile.outfit}`} aria-hidden="true"><i className="character-hair" /><i className="character-face"><b /><b /></i><i className="character-body" /><i className="character-heart" /></span>; }
+function Character({ profile, small = false }) { return <span className={`character ${small ? "character-small" : ""} skin-${profile.skin} hair-${profile.hair} outfit-${profile.outfit} acc-${profile.accessory || "none"}`} aria-hidden="true"><i className="character-hair-back" /><i className="character-body" /><i className="character-face"><b /><b /></i><i className="character-hair-front" />{profile.accessory === "star" ? <i className="character-star" /> : profile.accessory === "heart" ? <i className="character-heart" /> : null}</span>; }
 
 function HomePage({ account, navigate }) {
   const closet = account.closet || [];
@@ -175,7 +176,7 @@ function ProfilePage({ account, onSave, notify }) {
   const [nickname, setNickname] = useState(account.nickname);
   function choose(group, value) { setDraft((current) => ({ ...current, [group]: value })); }
   async function saveProfile(event) { event.preventDefault(); const next = { ...account, nickname: nickname.trim().slice(0, 16) || account.nickname, profile: draft }; await onSave(next); notify("프로필을 꾸몄어요!"); }
-  return <section className="page wrap profile-page"><PageTitle number="03" title={<>내 <em>프로필</em></>} text="오늘의 무드에 맞게 귀여운 캐릭터를 꾸며 보세요." /><form className="profile-layout" onSubmit={saveProfile}><section className="character-stage panel"><span className="profile-sparkle one">+</span><span className="profile-sparkle two">*</span><Character profile={draft} /><p>MOODROBE PAL</p><h2>{nickname || account.nickname}</h2><span>나만의 옷장 메이트</span></section><section className="profile-editor panel"><label className="profile-name">닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" /></label><ProfileChoices label="피부 톤" group="skin" choices={["peach", "tan", "deep"]} value={draft.skin} onChoose={choose} /><ProfileChoices label="헤어" group="hair" choices={["bob", "bang", "curl"]} value={draft.hair} onChoose={choose} /><ProfileChoices label="옷 색" group="outfit" choices={["mint", "pink", "sun"]} value={draft.outfit} onChoose={choose} /><button className="pixel-button" type="submit">프로필 저장하기</button></section></form><PinChangePanel account={account} onSave={onSave} notify={notify} /></section>;
+  return <section className="page wrap profile-page"><PageTitle number="03" title={<>내 <em>프로필</em></>} text="오늘의 무드에 맞게 귀여운 캐릭터를 꾸며 보세요." /><form className="profile-layout" onSubmit={saveProfile}><section className="character-stage panel"><span className="profile-sparkle one">+</span><span className="profile-sparkle two">*</span><Character profile={draft} /><p>MOODROBE PAL</p><h2>{nickname || account.nickname}</h2><span>나만의 옷장 메이트</span></section><section className="profile-editor panel"><label className="profile-name">닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" /></label><ProfileChoices label="피부 톤" group="skin" choices={["peach", "tan", "deep"]} value={draft.skin} onChoose={choose} /><ProfileChoices label="헤어" group="hair" choices={["bob", "bang", "curl"]} value={draft.hair} onChoose={choose} /><ProfileChoices label="옷 색" group="outfit" choices={["mint", "pink", "sun"]} value={draft.outfit} onChoose={choose} /><ProfileChoices label="액세서리" group="accessory" choices={["none", "heart", "star"]} value={draft.accessory || "none"} onChoose={choose} /><button className="pixel-button" type="submit">프로필 저장하기</button></section></form><PinChangePanel account={account} onSave={onSave} notify={notify} /></section>;
 }
 
 function PinChangePanel({ account, onSave, notify }) {
@@ -198,10 +199,27 @@ function PinChangePanel({ account, onSave, notify }) {
     } catch { setError("PIN을 저장하지 못했어요. 다시 시도해 주세요."); }
     setBusy(false);
   }
-  return <form className="pin-change panel" onSubmit={changePin}><div><span>LOCAL SECURITY</span><h2>PIN 다시 설정하기</h2><p>현재 이 기기에서 로그인된 상태라 새 PIN을 바로 만들 수 있어요.</p></div><div className="pin-fields"><label>새 PIN<input type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="숫자 4~8자리" /></label><label>새 PIN 확인<input type="password" inputMode="numeric" value={confirmPin} onChange={(event) => setConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="한 번 더 입력" /></label></div>{error && <p className="pin-error" role="alert">{error}</p>}<button className="pixel-button" disabled={busy} type="submit">{busy ? "SAVING..." : "새 PIN 저장하기"}</button><small>PIN 원문은 저장하지 않고, 새 salt와 해시값으로 교체합니다.</small></form>;
+  return <form className="pin-change panel" onSubmit={changePin}><div><span>LOCAL SECURITY</span><h2>PIN 다시 설정하기</h2><p>현재 이 기기에서 로그인된 상태라 새 PIN을 바로 만들 수 있어요.</p></div><div className="pin-fields"><label>새 PIN<input type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="숫자 4~8자리" /></label><label>새 PIN 확인<input type="password" inputMode="numeric" value={confirmPin} onChange={(event) => setConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="한 번 더 입력" /></label></div>{error && <p className="pin-error" role="alert">{error}</p>}<button className="pixel-button" disabled={busy} type="submit">{busy ? "SAVING..." : "새 PIN 저장하기"}</button></form>;
 }
 
-function ProfileChoices({ label, group, choices, value, onChoose }) { const labels = { peach: "피치", tan: "태닝", deep: "브라운", bob: "단발", bang: "앞머리", curl: "컬", mint: "민트", pink: "핑크", sun: "옐로" }; return <fieldset className="profile-choices"><legend>{label}</legend><div>{choices.map((choice) => <button className={value === choice ? "selected" : ""} type="button" key={choice} onClick={() => onChoose(group, choice)}><i className={`swatch ${group}-${choice}`} />{labels[choice]}</button>)}</div></fieldset>; }
+function ProfileChoices({ label, group, choices, value, onChoose }) { 
+  const labels = { peach: "피치", tan: "태닝", deep: "브라운", bob: "단발", bang: "앞머리", curl: "컬", mint: "민트", pink: "핑크", sun: "옐로", none: "없음", heart: "하트", star: "별" }; 
+  const descriptions = {
+    peach: "밝은 피치 톤 피부",
+    tan: "화사한 태닝 톤 피부",
+    deep: "매력적인 브라운 톤 피부",
+    bob: "단정한 단발 머리",
+    bang: "귀여운 앞머리",
+    curl: "발랄한 컬리 머리",
+    mint: "상큼한 민트색 상의",
+    pink: "러블리한 핑크색 상의",
+    sun: "따스한 옐로색 상의",
+    none: "액세서리 없음",
+    heart: "사랑스러운 하트 뱃지",
+    star: "빛나는 별 뱃지"
+  };
+  return <fieldset className="profile-choices"><legend>{label}</legend><div>{choices.map((choice) => <button className={value === choice ? "selected" : ""} type="button" key={choice} title={descriptions[choice]} onClick={() => onChoose(group, choice)}><i className={`swatch ${group}-${choice}`} />{labels[choice] || choice}</button>)}</div></fieldset>; 
+}
 
 function ClosetPage({ account, onSave, notify }) {
   const closet = account.closet;
