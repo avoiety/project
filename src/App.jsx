@@ -1,92 +1,155 @@
 import { useEffect, useMemo, useState } from "react";
 
 const weatherOptions = [
-  { id: "sunny", label: "맑음", icon: "SUN", temp: "18°", note: "체감 17° · 가벼운 겉옷을 챙기세요" },
-  { id: "cloudy", label: "흐림", icon: "CLD", temp: "15°", note: "체감 14° · 얇은 레이어를 추천해요" },
-  { id: "rainy", label: "비", icon: "RNY", temp: "13°", note: "방수 소재와 미끄럽지 않은 신발이 좋아요" },
-  { id: "cold", label: "추움", icon: "CLD", temp: "5°", note: "체감 온도가 낮아요 · 보온에 신경 쓰세요" },
+  { id: "sunny", label: "맑음", icon: "SUN", temp: "18°" },
+  { id: "cloudy", label: "흐림", icon: "CLD", temp: "15°" },
+  { id: "rainy", label: "비", icon: "RNY", temp: "13°" },
+  { id: "cold", label: "추움", icon: "CLD", temp: "5°" },
 ];
-
-const occasions = [
-  { id: "daily", label: "일상" },
-  { id: "work", label: "출근" },
-  { id: "date", label: "약속" },
-  { id: "active", label: "활동" },
-];
-
-const recommendationBank = {
-  sunny: {
-    daily: { title: "Soft Utility", score: 96, description: "힘을 뺀 실루엣에 질감으로 균형을 잡은, 햇살 좋은 날의 가벼운 레이어링.", pieces: ["오프화이트 셔츠", "빈티지 데님", "브라운 로퍼"], reason: "상의의 밝은 톤과 데님의 깊이가 안정적인 대비를 만들어요.", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1200&q=85" },
-    work: { title: "Clear Form", score: 94, description: "단정한 선과 부드러운 색감으로 신뢰감은 높이고 답답함은 덜었어요.", pieces: ["스트라이프 셔츠", "네이비 슬랙스", "블랙 더비"], reason: "명도 차이가 선명해 깔끔한 인상을 완성합니다.", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85" },
-    date: { title: "Warm Contrast", score: 97, description: "담백하지만 가까이 볼수록 디테일이 살아나는 약속을 위한 조합입니다.", pieces: ["니트 베스트", "크림 팬츠", "스웨이드 슈즈"], reason: "따뜻한 뉴트럴 톤이 편안하고 세련된 무드를 만듭니다.", image: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=85" },
-    active: { title: "Easy Motion", score: 93, description: "긴 하루에도 흐트러지지 않는 가벼운 활동성을 중심으로 골랐어요.", pieces: ["코튼 티셔츠", "카고 팬츠", "캔버스 스니커즈"], reason: "여유 있는 비율이 움직임과 스타일을 모두 챙깁니다.", image: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=1200&q=85" },
-  },
-  cloudy: { title: "Cloudy Layer", score: 94, description: "흐린 날의 빛에 어울리는 차분한 레이어링으로 구성했어요.", pieces: ["그레이 니트", "블랙 진", "화이트 스니커즈"], reason: "무채색의 농도 차이가 단조롭지 않은 깊이를 더합니다.", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85" },
-  rainy: { title: "Rainy Balance", score: 95, description: "비 오는 날에도 산뜻함을 잃지 않는 실용적인 조합이에요.", pieces: ["나일론 재킷", "다크 데님", "러버 첼시부츠"], reason: "가벼운 소재와 묵직한 신발의 대비가 안정적입니다.", image: "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1200&q=85" },
-  cold: { title: "Winter Ease", score: 94, description: "포근한 온도감 안에서 실루엣이 살아나는 겨울 코디입니다.", pieces: ["울 코트", "램스울 니트", "와이드 팬츠"], reason: "결이 다른 소재를 겹쳐 따뜻하고 풍성한 인상을 줍니다.", image: "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=85" },
+const occasions = ["일상", "출근", "약속", "활동"];
+const categories = ["반팔", "긴팔", "셔츠", "니트", "아우터", "바지", "치마", "원피스", "신발", "가방"];
+const colors = ["흰색", "검정", "회색", "베이지", "갈색", "파랑", "하늘색", "노랑", "분홍", "초록", "빨강"];
+const profileOptions = {
+  skin: ["peach", "tan", "deep"],
+  hair: ["bob", "bang", "curl"],
+  outfit: ["mint", "pink", "sun"],
 };
+const defaultProfile = { skin: "peach", hair: "bob", outfit: "mint" };
+const defaultItems = [
+  { id: "starter-shirt", name: "크림 코튼 셔츠", category: "셔츠", color: "흰색", occasions: ["일상", "출근", "약속"], image: "https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&w=600&q=80" },
+  { id: "starter-jeans", name: "빈티지 블루 데님", category: "바지", color: "파랑", occasions: ["일상", "약속", "활동"], image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=600&q=80" },
+  { id: "starter-shoes", name: "화이트 스니커즈", category: "신발", color: "흰색", occasions, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80" },
+];
 
-const defaultSaved = [];
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("moodrobe-local", 1);
+    request.onupgradeneeded = () => request.result.createObjectStore("app", { keyPath: "key" });
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function readAccount() {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction("app", "readonly").objectStore("app").get("account");
+    request.onsuccess = () => { db.close(); resolve(request.result?.value || null); };
+    request.onerror = () => { db.close(); reject(request.error); };
+  });
+}
+
+async function writeAccount(account) {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const request = db.transaction("app", "readwrite").objectStore("app").put({ key: "account", value: account });
+    request.onsuccess = () => { db.close(); resolve(); };
+    request.onerror = () => { db.close(); reject(request.error); };
+  });
+}
+
+function bytesToHex(bytes) { return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join(""); }
+function randomSalt() { const bytes = crypto.getRandomValues(new Uint8Array(16)); return bytesToHex(bytes); }
+async function hashPin(pin, salt) {
+  const data = new TextEncoder().encode(`${salt}:${pin}`);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return bytesToHex(new Uint8Array(hash));
+}
+
+function legacyCloset() {
+  try { return JSON.parse(localStorage.getItem("moodrobe-closet")) || defaultItems; } catch { return defaultItems; }
+}
 
 function App() {
-  const [weather, setWeather] = useState("sunny");
-  const [occasion, setOccasion] = useState("daily");
-  const [saved, setSaved] = useState(() => JSON.parse(localStorage.getItem("moodrobe-saved") || "[]"));
-  const [notice, setNotice] = useState("");
-  const selectedWeather = weatherOptions.find((item) => item.id === weather);
-  const outfit = useMemo(() => weather === "sunny" ? recommendationBank.sunny[occasion] : recommendationBank[weather], [weather, occasion]);
-  const outfitKey = `${weather}-${occasion}-${outfit.title}`;
-  const isSaved = saved.some((item) => item.key === outfitKey);
+  const [account, setAccount] = useState(undefined);
+  const [unlocked, setUnlocked] = useState(false);
+  const [page, setPage] = useState(() => ["closet", "profile"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "today");
+  const [toast, setToast] = useState("");
 
-  useEffect(() => localStorage.setItem("moodrobe-saved", JSON.stringify(saved)), [saved]);
+  useEffect(() => { readAccount().then(setAccount).catch(() => setAccount(null)); }, []);
+  useEffect(() => { const onHash = () => setPage(["closet", "profile"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "today"); addEventListener("hashchange", onHash); return () => removeEventListener("hashchange", onHash); }, []);
 
-  function findOutfit() {
-    document.getElementById("recommendation")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  function notify(message) { setToast(message); window.setTimeout(() => setToast(""), 2500); }
+  async function saveAccount(nextAccount) { await writeAccount(nextAccount); setAccount(nextAccount); }
+  function navigate(next) { location.hash = ["closet", "profile"].includes(next) ? next : "today"; }
 
-  function toggleSave() {
-    setSaved((current) => isSaved ? current.filter((item) => item.key !== outfitKey) : [...current, { key: outfitKey, title: outfit.title, pieces: outfit.pieces }]);
-    setNotice(isSaved ? "저장한 코디에서 삭제했어요." : "내 스타일 로그에 저장했어요.");
-    window.setTimeout(() => setNotice(""), 2400);
-  }
+  if (account === undefined) return <main className="account-screen"><p className="loading-copy">MOODROBE를 준비하고 있어요...</p></main>;
+  if (!unlocked) return <AccountGate account={account} onCreate={saveAccount} onUnlock={() => setUnlocked(true)} />;
 
-  return (
-    <>
-      <header className="topbar wrap">
-        <a className="brand" href="#top">moodrobe<span>.</span></a>
-        <nav aria-label="주 메뉴"><a href="#recommendation">추천</a><a href="#closet">내 옷장</a></nav>
-        <div className="avatar" aria-label="J의 프로필">J</div>
-      </header>
-      <main id="top">
-        <section className="hero wrap">
-          <div className="hero-copy"><p className="eyebrow"><i /> PERSONAL OUTFIT ENGINE</p><h1>오늘, 나답게<br /><em>입을</em> 이유.</h1><p>날씨와 일정, 그리고 당신의 옷장을 읽어<br />가장 자연스러운 조합을 찾아드려요.</p><div className="weather-note"><b>{selectedWeather.icon}</b><span><strong>{selectedWeather.temp} {selectedWeather.label}, 서울</strong><small>{selectedWeather.note}</small></span></div></div>
-          <div className="hero-photo"><img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=85" alt="베이지 재킷 스타일" /><div className="photo-tag">TODAY'S <b>EDIT</b><span>01</span></div></div>
-        </section>
-
-        <section className="composer wrap" aria-labelledby="input-heading">
-          <div className="section-heading"><p>01 / INPUT</p><h2 id="input-heading">오늘의 <em>장면</em>을 골라주세요.</h2></div>
-          <ChoiceRow label="날씨" caption="WEATHER" options={weatherOptions} value={weather} onChange={setWeather} />
-          <ChoiceRow label="상황" caption="OCCASION" options={occasions} value={occasion} onChange={setOccasion} />
-          <button className="primary-action" onClick={findOutfit}>내 옷장으로 코디 찾기 <span>→</span></button>
-        </section>
-
-        <section className="recommendation wrap" id="recommendation" aria-live="polite">
-          <div className="result-heading"><div><p>02 / RESULT</p><h2><em>가장 잘 어울리는</em> 오늘의 조합</h2></div><button className="refresh" onClick={findOutfit} aria-label="추천 코디로 이동">R</button></div>
-          <article className="outfit-card"><div className="outfit-image"><img src={outfit.image} alt={`${outfit.title} 추천 코디`} /><span>MATCH <b>{outfit.score}%</b></span></div><div className="outfit-details"><p className="kicker">{weather.toUpperCase()} / {occasion.toUpperCase()}</p><h3>{outfit.title}</h3><p className="description">{outfit.description}</p><div className="pieces">{outfit.pieces.map((piece) => <span key={piece}>{piece}</span>)}</div><div className="reason"><b>WHY IT WORKS</b><p>{outfit.reason}</p></div><button className={`save-button ${isSaved ? "saved" : ""}`} onClick={toggleSave}>{isSaved ? "♥ 저장된 코디" : "♡ 이 코디 저장하기"}</button></div></article>
-        </section>
-
-        <section className="closet" id="closet"><div className="wrap"><p>03 / YOUR DATA</p><div className="closet-heading"><h2>당신의 옷장이<br />점점 <em>똑똑해지고</em> 있어요.</h2><span>저장한 코디와 피드백이<br />다음 추천의 취향이 됩니다.</span></div><div className="stats"><Stat value="34" label="등록한 아이템" /><Stat value={String(saved.length).padStart(2, "0")} label="저장한 코디" /><Stat value="87%" label="취향 일치도" /></div>{saved.length > 0 && <div className="saved-list"><b>최근 저장한 코디</b>{saved.slice(-3).reverse().map((item) => <span key={item.key}>{item.title} · {item.pieces.join(" / ")}</span>)}</div>}</div></section>
-      </main>
-      <footer className="wrap"><a className="brand" href="#top">moodrobe<span>.</span></a><span>LESS SEARCHING, MORE DRESSING.</span><span>© 2026</span></footer>
-      {notice && <div className="toast" role="status">{notice}</div>}
-    </>
-  );
+  return <><header className="topbar wrap"><a className="brand" href="#today">moodrobe<span>.</span></a><nav><button className={page === "closet" ? "active" : ""} onClick={() => navigate("closet")}>MY CLOSET</button><button className={page === "today" ? "active" : ""} onClick={() => navigate("today")}>TODAY'S OUTFIT</button></nav><button className="profile-trigger" onClick={() => navigate("profile")} aria-label="내 프로필 열기"><Character profile={account.profile} small /></button></header><main>{page === "closet" ? <ClosetPage account={account} onSave={saveAccount} notify={notify} /> : page === "profile" ? <ProfilePage account={account} onSave={saveAccount} notify={notify} /> : <TodayPage closet={account.closet} navigate={navigate} notify={notify} />}</main>{toast && <div className="toast" role="status">{toast}</div>}</>;
 }
 
-function ChoiceRow({ label, caption, options, value, onChange }) {
-  return <div className="choice-row"><div><small>{caption}</small><b>{label}</b></div><div className="choices">{options.map((option) => <button key={option.id} className={value === option.id ? "active" : ""} onClick={() => onChange(option.id)}>{option.icon && <i>{option.icon}</i>}{option.label}</button>)}</div></div>;
+function AccountGate({ account, onCreate, onUnlock }) {
+  const [nickname, setNickname] = useState(account?.nickname || "");
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const isNew = !account;
+
+  async function submit(event) {
+    event.preventDefault();
+    setError("");
+    if (!/^\d{4,8}$/.test(pin)) { setError("PIN은 숫자 4~8자리로 입력해 주세요."); return; }
+    if (isNew) {
+      if (!nickname.trim()) { setError("닉네임을 입력해 주세요."); return; }
+      if (pin !== confirmPin) { setError("PIN이 서로 달라요."); return; }
+      setBusy(true);
+      try {
+        const salt = randomSalt();
+        const pinHash = await hashPin(pin, salt);
+        await onCreate({ nickname: nickname.trim().slice(0, 16), salt, pinHash, profile: defaultProfile, closet: legacyCloset() });
+        localStorage.removeItem("moodrobe-closet");
+        onUnlock();
+      } catch { setError("저장소를 열 수 없어요. 브라우저 설정을 확인해 주세요."); }
+      setBusy(false);
+      return;
+    }
+    setBusy(true);
+    try {
+      const pinHash = await hashPin(pin, account.salt);
+      if (nickname.trim() !== account.nickname || pinHash !== account.pinHash) { setError("닉네임 또는 PIN이 맞지 않아요."); } else { onUnlock(); }
+    } catch { setError("PIN을 확인하지 못했어요. 다시 시도해 주세요."); }
+    setBusy(false);
+  }
+
+  return <main className="account-screen"><section className="account-card panel"><div className="account-character"><Character profile={defaultProfile} /></div><div><p className="eyebrow"><i /> LOCAL WARDROBE LOCK</p><h1>{isNew ? "나만의 옷장을\n만들어 볼까요?" : `${account.nickname}의\n옷장에 돌아왔어요!`}</h1><p className="account-description">{isNew ? "닉네임과 PIN은 이 브라우저의 IndexedDB에만 저장돼요." : "PIN을 입력하면 나만의 옷장과 캐릭터를 불러와요."}</p></div><form onSubmit={submit}><label>닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" autoComplete="username" placeholder="예: 무드냥" /></label><label>PIN <small>숫자 4~8자리</small><input type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete={isNew ? "new-password" : "current-password"} placeholder="PIN 입력" /></label>{isNew && <label>PIN 다시 입력<input type="password" inputMode="numeric" value={confirmPin} onChange={(event) => setConfirmPin(event.target.value.replace(/\D/g, "").slice(0, 8))} autoComplete="new-password" placeholder="PIN 다시 입력" /></label>}{error && <p className="account-error" role="alert">{error}</p>}<button className="pixel-button" disabled={busy} type="submit">{busy ? "SAVING..." : isNew ? "내 옷장 만들기" : "내 옷장 열기"}</button></form><p className="account-note">PIN 원문은 저장하지 않고, 해시값만 저장합니다. 이 기능은 같은 브라우저에서만 사용할 수 있어요.</p></section></main>;
 }
 
-function Stat({ value, label }) { return <div><strong>{value}</strong><span>{label}</span></div>; }
+function Character({ profile, small = false }) { return <span className={`character ${small ? "character-small" : ""} skin-${profile.skin} hair-${profile.hair} outfit-${profile.outfit}`} aria-hidden="true"><i className="character-hair" /><i className="character-face"><b /><b /></i><i className="character-body" /><i className="character-heart" /></span>; }
 
+function ProfilePage({ account, onSave, notify }) {
+  const [draft, setDraft] = useState(account.profile);
+  const [nickname, setNickname] = useState(account.nickname);
+  function choose(group, value) { setDraft((current) => ({ ...current, [group]: value })); }
+  async function saveProfile(event) { event.preventDefault(); const next = { ...account, nickname: nickname.trim().slice(0, 16) || account.nickname, profile: draft }; await onSave(next); notify("프로필을 꾸몄어요!"); }
+  return <section className="page wrap profile-page"><PageTitle number="03" title={<>내 <em>프로필</em></>} text="오늘의 무드에 맞게 귀여운 캐릭터를 꾸며 보세요." /><form className="profile-layout" onSubmit={saveProfile}><section className="character-stage panel"><span className="profile-sparkle one">+</span><span className="profile-sparkle two">*</span><Character profile={draft} /><p>MOODROBE PAL</p><h2>{nickname || account.nickname}</h2><span>나만의 옷장 메이트</span></section><section className="profile-editor panel"><label className="profile-name">닉네임<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength="16" /></label><ProfileChoices label="피부 톤" group="skin" choices={["peach", "tan", "deep"]} value={draft.skin} onChoose={choose} /><ProfileChoices label="헤어" group="hair" choices={["bob", "bang", "curl"]} value={draft.hair} onChoose={choose} /><ProfileChoices label="옷 색" group="outfit" choices={["mint", "pink", "sun"]} value={draft.outfit} onChoose={choose} /><button className="pixel-button" type="submit">프로필 저장하기</button></section></form></section>;
+}
+
+function ProfileChoices({ label, group, choices, value, onChoose }) { const labels = { peach: "피치", tan: "태닝", deep: "브라운", bob: "단발", bang: "앞머리", curl: "컬", mint: "민트", pink: "핑크", sun: "옐로" }; return <fieldset className="profile-choices"><legend>{label}</legend><div>{choices.map((choice) => <button className={value === choice ? "selected" : ""} type="button" key={choice} onClick={() => onChoose(group, choice)}><i className={`swatch ${group}-${choice}`} />{labels[choice]}</button>)}</div></fieldset>; }
+
+function ClosetPage({ account, onSave, notify }) {
+  const closet = account.closet;
+  const emptyForm = { name: "", category: "반팔", color: "흰색", occasions: ["일상"], image: "" };
+  const [form, setForm] = useState(emptyForm); const [preview, setPreview] = useState(""); const [editingItem, setEditingItem] = useState(null); const [editForm, setEditForm] = useState(emptyForm); const [editPreview, setEditPreview] = useState("");
+  function readImage(event, applyImage) { const file = event.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => applyImage(reader.result); reader.readAsDataURL(file); }
+  function uploadImage(event) { readImage(event, (image) => { setPreview(image); setForm((current) => ({ ...current, image })); }); }
+  function addItem(event) { event.preventDefault(); if (!form.name.trim() || !form.image) { notify("옷 이름과 사진을 모두 등록해 주세요!"); return; } onSave({ ...account, closet: [...closet, { ...form, id: crypto.randomUUID() }] }); setForm(emptyForm); setPreview(""); notify("옷장에 새 아이템을 넣었어요!"); }
+  function removeItem(id) { onSave({ ...account, closet: closet.filter((item) => item.id !== id) }); notify("옷장에서 아이템을 뺐어요."); }
+  function toggleOccasion(value, setValue) { setValue((current) => ({ ...current, occasions: current.occasions.includes(value) ? current.occasions.filter((item) => item !== value) : [...current.occasions, value] })); }
+  function startEdit(item) { setEditingItem(item); setEditForm({ ...item, occasions: item.occasions || occasions }); setEditPreview(item.image); }
+  function closeEdit() { setEditingItem(null); setEditPreview(""); }
+  function saveEdit(event) { event.preventDefault(); if (!editForm.name.trim() || !editForm.image) { notify("옷 이름과 사진을 모두 등록해 주세요!"); return; } onSave({ ...account, closet: closet.map((item) => item.id === editingItem.id ? { ...item, ...editForm } : item) }); closeEdit(); notify("옷 정보를 수정했어요!"); }
+  return <section className="page wrap closet-page"><PageTitle number="01" title={<>내 <em>옷장</em></>} text="실제 가지고 있는 옷을 등록하면, 오늘의 추천이 더 정확해져요." /><div className="closet-layout"><form className="registration panel" onSubmit={addItem}><div className="panel-title"><span>NEW ITEM</span><h2>옷 등록하기</h2></div><label className={`upload-box ${preview ? "has-image" : ""}`}>{preview ? <img src={preview} alt="업로드 미리보기" /> : <><b>+</b><span>사진 업로드</span><small>JPG, PNG 파일을 골라요</small></>}<input type="file" accept="image/*" onChange={uploadImage} /></label><label>옷 이름<input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="예: 하늘색 반팔 티셔츠" /></label><SelectField label="종류" value={form.category} options={categories} onChange={(value) => setForm({ ...form, category: value })} /><SelectField label="색깔" value={form.color} options={colors} onChange={(value) => setForm({ ...form, color: value })} /><OccasionField value={form.occasions} onToggle={(value) => toggleOccasion(value, setForm)} /><button className="pixel-button" type="submit">옷장에 넣기 +</button></form><section className="wardrobe"><div className="wardrobe-head"><div><span>MY COLLECTION</span><h2>등록한 옷 <b>{closet.length}</b>개</h2></div><p>사진 또는 수정 버튼을 눌러<br />정보를 바꿀 수 있어요</p></div><div className="item-grid">{closet.map((item) => <article className="clothing-item" key={item.id}><button className="item-photo" aria-label={`${item.name} 수정`} onClick={() => startEdit(item)}><img src={item.image} alt={item.name} /></button><div><b>{item.name}</b><span>{item.category} · {item.color}</span><small>{(item.occasions || occasions).join(" · ")}</small></div><div className="item-actions"><button className="edit-item" onClick={() => startEdit(item)}>수정</button><button className="delete-item" aria-label={`${item.name} 삭제`} onClick={() => removeItem(item.id)}>X</button></div></article>)}</div></section></div>{editingItem && <div className="edit-backdrop" role="presentation" onMouseDown={closeEdit}><form className="edit-dialog panel" onSubmit={saveEdit} onMouseDown={(event) => event.stopPropagation()}><div className="edit-dialog-head"><div className="panel-title"><span>EDIT ITEM</span><h2>옷 정보 수정</h2></div><button type="button" aria-label="수정 창 닫기" onClick={closeEdit}>X</button></div><label className="upload-box">{editPreview ? <img src={editPreview} alt="수정할 옷 미리보기" /> : <><b>+</b><span>사진 업로드</span></>}<input type="file" accept="image/*" onChange={(event) => readImage(event, (image) => { setEditPreview(image); setEditForm((current) => ({ ...current, image })); })} /></label><label>옷 이름<input required value={editForm.name} onChange={(event) => setEditForm({ ...editForm, name: event.target.value })} /></label><SelectField label="종류" value={editForm.category} options={categories} onChange={(value) => setEditForm({ ...editForm, category: value })} /><SelectField label="색깔" value={editForm.color} options={colors} onChange={(value) => setEditForm({ ...editForm, color: value })} /><OccasionField value={editForm.occasions} onToggle={(value) => toggleOccasion(value, setEditForm)} /><div className="edit-actions"><button className="cancel-button" type="button" onClick={closeEdit}>취소</button><button className="pixel-button" type="submit">수정 저장</button></div></form></div>}</section>;
+}
+
+const neutralColors = new Set(["흰색", "검정", "회색", "베이지", "갈색"]);
+const complementaryColors = new Set(["파랑-노랑", "노랑-파랑", "하늘색-갈색", "갈색-하늘색", "분홍-초록", "초록-분홍", "빨강-하늘색", "하늘색-빨강"]);
+function compatibilityWeight(first, second) { let weight = first.color === second.color ? 5 : neutralColors.has(first.color) || neutralColors.has(second.color) ? 7 : complementaryColors.has(`${first.color}-${second.color}`) ? 6 : 2; weight += (first.occasions || []).filter((occasion) => (second.occasions || []).includes(occasion)).length * 2; return weight + (first.category === "아우터" || second.category === "아우터" ? 1 : 0); }
+function buildCompatibilityGraph(items) { const graph = new Map(items.map((item) => [item.id, new Map()])); items.forEach((item, index) => items.slice(index + 1).forEach((other) => { const weight = compatibilityWeight(item, other); graph.get(item.id).set(other.id, weight); graph.get(other.id).set(item.id, weight); })); return graph; }
+function TodayPage({ closet, navigate, notify }) { const [weather, setWeather] = useState("sunny"); const [occasion, setOccasion] = useState("일상"); const [spinning, setSpinning] = useState(false); const [result, setResult] = useState(null); const matchingItems = useMemo(() => closet.filter((item) => weather === "rainy" ? ["아우터", "신발", "긴팔", "바지"].includes(item.category) : weather === "cold" ? !["반팔", "치마"].includes(item.category) : true), [closet, weather]); const pools = useMemo(() => ({ top: matchingItems.filter((item) => ["반팔", "긴팔", "셔츠", "니트", "아우터"].includes(item.category)), bottom: matchingItems.filter((item) => ["바지", "치마", "원피스"].includes(item.category)), shoes: matchingItems.filter((item) => item.category === "신발") }), [matchingItems]); const graph = useMemo(() => buildCompatibilityGraph(closet), [closet]); function candidates(slot) { const type = slot === "top" ? ["반팔", "긴팔", "셔츠", "니트", "아우터"] : slot === "bottom" ? ["바지", "치마", "원피스"] : ["신발"]; const filtered = pools[slot].filter((item) => (item.occasions || occasions).includes(occasion)); return filtered.length ? filtered : pools[slot].length ? pools[slot] : closet.filter((item) => type.includes(item.category)); } function spin() { if (!closet.length) { notify("먼저 내 옷장에 옷을 등록해 주세요!"); return; } setSpinning(true); setResult(null); window.setTimeout(() => { const top = candidates("top"); const bottom = candidates("bottom"); const shoes = candidates("shoes"); const looks = []; top.forEach((a) => bottom.forEach((b) => shoes.forEach((c) => looks.push({ top: a, bottom: b, shoes: c, score: graph.get(a.id).get(b.id) + graph.get(a.id).get(c.id) + graph.get(b.id).get(c.id) })))); const best = looks.sort((a, b) => b.score - a.score)[0]; setResult(best || { top: top[0], bottom: bottom[0], shoes: shoes[0] }); setSpinning(false); }, 1000); } return <section className="page wrap today-page"><PageTitle number="02" title={<>오늘의 <em>옷</em></>} text="날씨와 오늘의 상황을 고른 뒤, 카지노 룰렛을 돌려 보세요!" /><div className="today-layout"><section className="game-panel panel"><div className="panel-title"><span>QUEST SETUP</span><h2>오늘의 조건</h2></div><p className="field-label">오늘 날씨</p><div className="weather-picks">{weatherOptions.map((item) => <button className={weather === item.id ? "active" : ""} key={item.id} onClick={() => setWeather(item.id)}><i>{item.icon}</i><span>{item.label}<small>{item.temp}</small></span></button>)}</div><p className="field-label">오늘의 상황</p><div className="occasion-picks">{occasions.map((item) => <button className={occasion === item ? "active" : ""} key={item} onClick={() => setOccasion(item)}>{item}</button>)}</div><div className="status-card"><b>{weatherOptions.find((item) => item.id === weather).label} · {occasion}</b><span>날씨와 상황에 맞는 옷 {matchingItems.filter((item) => (item.occasions || occasions).includes(occasion)).length}개</span></div></section><section className="roulette-area"><div className="slot-machine"><div className="machine-top"><span>LUCKY</span><b>OUTFIT SLOTS</b><span>LUCKY</span></div><div className="reels"><SlotReel label="상의" items={pools.top} spinning={spinning} result={result?.top} /><SlotReel label="하의" items={pools.bottom} spinning={spinning} result={result?.bottom} /><SlotReel label="신발" items={pools.shoes} spinning={spinning} result={result?.shoes} /></div></div><button className="spin-button" onClick={spin} disabled={spinning}>{spinning ? "SPINNING..." : "SPIN THE LOOK!"}</button></section></div><section className="result-zone">{result ? <div className="result-items">{Object.entries(result).filter(([key]) => key !== "score").map(([slot, item]) => <article key={slot}>{item ? <><img src={item.image} alt={item.name} /><b>{item.name}</b><span>{slot === "top" ? "상의" : slot === "bottom" ? "하의" : "신발"} · {item.color}</span></> : <><b>+</b><span>등록 필요</span></>}</article>)}</div> : <div className="empty-result"><b>?</b><p>세 개의 릴을 동시에 돌려 코디를 완성해 보세요.</p>{closet.length === 0 && <button onClick={() => navigate("closet")}>내 옷장 채우러 가기 →</button>}</div>}</section></section>; }
+function PageTitle({ number, title, text }) { return <div className="page-title"><span>PAGE {number}</span><div><h1>{title}</h1><p>{text}</p></div></div>; }
+function SelectField({ label, value, options, onChange }) { return <label>{label}<select value={value} onChange={(event) => onChange(event.target.value)}>{options.map((option) => <option key={option}>{option}</option>)}</select></label>; }
+function OccasionField({ value, onToggle }) { return <fieldset className="occasion-field"><legend>어울리는 상황 <small>복수 선택</small></legend><div>{occasions.map((item) => <button type="button" className={value.includes(item) ? "selected" : ""} key={item} onClick={() => onToggle(item)}>{item}</button>)}</div></fieldset>; }
+function SlotReel({ label, items, spinning, result }) { const item = spinning ? items[0] : result; return <div className={`slot-reel ${spinning ? "spinning" : ""}`}><div className="reel-label">{label}</div><div className="reel-window">{item ? <><img src={item.image} alt={item.name} /><b>{item.name}</b></> : <span>?</span>}</div></div>; }
 export default App;
