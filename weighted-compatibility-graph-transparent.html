@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MOODROBE Weighted Graph</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Press+Start+2P&display=swap');
+      html, body { width:1450px; height:555px; margin:0; background:transparent; overflow:hidden; }
+      svg { display:block; width:1450px; height:555px; overflow:visible; }
+      .edge { fill:none; }.edge-label rect { stroke:#31558b; stroke-width:2px; }.edge-label text { fill:#17294c; font:17px "Press Start 2P", monospace; text-anchor:middle; dominant-baseline:middle; }
+      .node rect { stroke:#31558b; stroke-width:4px; }.node .code { fill:#5573a5; font:10px "Press Start 2P", monospace; text-anchor:middle; }.node .name { fill:#17294c; font:29px "Gaegu", cursive; font-weight:700; text-anchor:middle; }.node .category { fill:#263e6b; font:20px "Gaegu", cursive; font-weight:700; text-anchor:middle; }
+    </style>
+  </head>
+  <body>
+    <svg viewBox="0 0 1450 555" role="img" aria-label="MOODROBE 의류 호환성 가중치 그래프">
+      <path class="edge" d="M330 174 Q725 55 1120 174" stroke="#e65e88" stroke-width="8" />
+      <path class="edge" d="M330 174 Q330 395 725 417" stroke="#5e99c5" stroke-width="6" />
+      <path class="edge" d="M1120 174 Q1120 395 725 417" stroke="#5e99c5" stroke-width="6" />
+      <g class="edge-label"><rect x="696" y="78" width="58" height="39" rx="4" fill="#ff9fba"/><text x="725" y="99">11</text></g>
+      <g class="edge-label"><rect x="423" y="345" width="52" height="39" rx="4" fill="#9edcff"/><text x="449" y="366">9</text></g>
+      <g class="edge-label"><rect x="970" y="345" width="52" height="39" rx="4" fill="#9edcff"/><text x="996" y="366">9</text></g>
+      <g class="node" transform="translate(180,85)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#ffe77a" stroke="none"/><text class="code" x="150" y="58">VERTEX A</text><text class="name" x="150" y="105">크림 코튼 셔츠</text><text class="category" x="150" y="143">셔츠 · 흰색</text></g>
+      <g class="node" transform="translate(970,85)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#ff9fba" stroke="none"/><text class="code" x="150" y="58">VERTEX B</text><text class="name" x="150" y="105">빈티지 블루 데님</text><text class="category" x="150" y="143">바지 · 파랑</text></g>
+      <g class="node" transform="translate(575,330)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#a9edce" stroke="none"/><text class="code" x="150" y="58">VERTEX C</text><text class="name" x="150" y="105">화이트 스니커즈</text><text class="category" x="150" y="143">신발 · 흰색</text></g>
+    </svg>
+  </body>
+</html>

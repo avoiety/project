@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MOODROBE Weighted Compatibility Graph</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@700&family=Press+Start+2P&display=swap');
+      :root { --navy:#17294c; --ink:#263e6b; --line:#31558b; --sky:#9edcff; --pale-sky:#dff4ff; --yellow:#ffe77a; --cream:#fffef7; --mint:#a9edce; --pink:#ff9fba; --muted:#5573a5; }
+      * { box-sizing:border-box; }
+      html, body { width:1600px; height:1000px; margin:0; overflow:hidden; background:var(--pale-sky); }
+      body { background-image:linear-gradient(90deg,#ffffff70 1px,transparent 1px),linear-gradient(#ffffff70 1px,transparent 1px); background-size:32px 32px; color:var(--navy); font-family:"Gaegu", cursive; }
+      main { position:relative; width:1600px; height:1000px; padding:62px 75px; }
+      .eyebrow { display:inline-block; padding:11px 14px; border:3px solid var(--line); background:var(--yellow); box-shadow:4px 4px 0 var(--line); font:11px "Press Start 2P", monospace; }
+      h1 { margin:30px 0 11px; font:31px/1.45 "Press Start 2P", monospace; letter-spacing:-3px; }
+      .subtitle { margin:0; color:var(--ink); font-size:27px; font-weight:700; }
+      .legend { position:absolute; top:72px; right:78px; width:375px; padding:20px 22px; border:4px solid var(--line); background:var(--cream); box-shadow:6px 6px 0 var(--line); }
+      .legend h2 { margin:0 0 13px; font:11px "Press Start 2P", monospace; }.legend p { margin:7px 0; color:var(--ink); font-size:21px; font-weight:700; }.line { display:inline-block; width:37px; height:0; margin:0 10px 4px 0; border-top:5px solid var(--line); vertical-align:middle; }.line.high { border-color:#e65e88; border-top-width:8px; }.line.mid { border-color:#5e99c5; border-top-width:6px; }.line.low { border-color:#9eb8cf; border-top-width:3px; }
+      .graph { position:absolute; top:280px; left:75px; width:1450px; height:555px; border:4px solid var(--line); background:var(--cream); box-shadow:8px 8px 0 var(--line); }
+      svg { width:100%; height:100%; overflow:visible; }.edge { fill:none; }.edge-label rect { stroke:var(--line); stroke-width:2px; }.edge-label text { fill:var(--navy); font:17px "Press Start 2P", monospace; text-anchor:middle; dominant-baseline:middle; }
+      .node rect { stroke:var(--line); stroke-width:4px; }.node .code { fill:var(--muted); font:10px "Press Start 2P", monospace; text-anchor:middle; }.node .name { fill:var(--navy); font-size:29px; font-weight:700; text-anchor:middle; }.node .category { fill:var(--ink); font-size:20px; font-weight:700; text-anchor:middle; }
+      .formula { position:absolute; right:76px; bottom:55px; width:790px; padding:19px 23px; border:4px solid var(--line); background:var(--mint); box-shadow:6px 6px 0 var(--line); color:var(--navy); font-size:22px; font-weight:700; }.formula strong { font-family:"Press Start 2P", monospace; font-size:12px; }.note { position:absolute; bottom:66px; left:78px; width:550px; color:var(--ink); font-size:21px; font-weight:700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="eyebrow">DISCRETE MATHEMATICS · WEIGHTED GRAPH</span>
+      <h1>MOODROBE 의류 호환성 가중치 그래프</h1>
+      <p class="subtitle">정점은 옷 아이템, 간선은 두 아이템의 조합 관계, 숫자는 실제 추천 로직의 호환 점수입니다.</p>
+      <section class="legend"><h2>EDGE WEIGHT</h2><p><i class="line high"></i>높은 호환성 (11점)</p><p><i class="line mid"></i>중간 호환성 (9점)</p><p><i class="line low"></i>기본 조합 점수 (7점)</p></section>
+      <section class="graph" aria-label="의류 아이템 호환성 가중치 그래프">
+        <svg viewBox="0 0 1450 555" role="img">
+          <path class="edge" d="M330 174 Q725 55 1120 174" stroke="#e65e88" stroke-width="8" />
+          <path class="edge" d="M330 174 Q330 395 725 417" stroke="#5e99c5" stroke-width="6" />
+          <path class="edge" d="M1120 174 Q1120 395 725 417" stroke="#5e99c5" stroke-width="6" />
+          <g class="edge-label"><rect x="696" y="78" width="58" height="39" rx="4" fill="#ff9fba"/><text x="725" y="99">11</text></g>
+          <g class="edge-label"><rect x="423" y="345" width="52" height="39" rx="4" fill="#9edcff"/><text x="449" y="366">9</text></g>
+          <g class="edge-label"><rect x="970" y="345" width="52" height="39" rx="4" fill="#9edcff"/><text x="996" y="366">9</text></g>
+          <g class="node" transform="translate(180,85)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#ffe77a" stroke="none"/><text class="code" x="150" y="58">VERTEX A</text><text class="name" x="150" y="105">크림 코튼 셔츠</text><text class="category" x="150" y="143">셔츠 · 흰색</text></g>
+          <g class="node" transform="translate(970,85)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#ff9fba" stroke="none"/><text class="code" x="150" y="58">VERTEX B</text><text class="name" x="150" y="105">빈티지 블루 데님</text><text class="category" x="150" y="143">바지 · 파랑</text></g>
+          <g class="node" transform="translate(575,330)"><rect width="300" height="176" rx="8" fill="#fffef7"/><rect width="300" height="16" fill="#a9edce" stroke="none"/><text class="code" x="150" y="58">VERTEX C</text><text class="name" x="150" y="105">화이트 스니커즈</text><text class="category" x="150" y="143">신발 · 흰색</text></g>
+        </svg>
+      </section>
+      <p class="note">예시 데이터: 서비스 기본 의류 3개</p>
+      <section class="formula"><strong>w(i, j)</strong> = 색상 조합 점수 + 공통 상황 수 × 2 + 아우터 보정값<br />예: 셔츠–데님 = 무채색 조합 7 + 공통 상황 2개 × 2 = <strong>11</strong></section>
+    </main>
+  </body>
+</html>

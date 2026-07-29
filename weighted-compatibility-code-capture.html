@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOODROBE Weighted Compatibility Graph Code</title>
+    <style>
+      :root { --navy:#19355b; --line:#31558b; --sky:#e9f6fc; --paper:#fffef9; --yellow:#fff3a7; --pink:#f8b4c7; --mint:#c9ecd9; --code:#152d49; --text:#eaf7ff; --comment:#9ee2c2; --keyword:#ffe77a; --number:#ffadc4; --string:#a9d7ff; }
+      * { box-sizing:border-box; }
+      html, body { width:2400px; height:1540px; margin:0; overflow:hidden; }
+      body { padding:92px 120px; background-color:var(--sky); background-image:linear-gradient(90deg,#ffffff80 1px,transparent 1px),linear-gradient(#ffffff80 1px,transparent 1px); background-size:32px 32px; color:var(--navy); font-family:"Malgun Gothic","맑은 고딕",sans-serif; }
+      header { display:flex; align-items:end; justify-content:space-between; padding:27px 34px 25px; border:5px solid var(--navy); background:var(--paper); box-shadow:9px 9px 0 var(--line); }
+      .tag { display:inline-block; margin-bottom:15px; padding:8px 12px; border:3px solid var(--navy); background:var(--yellow); font:700 19px Consolas,"Courier New",monospace; letter-spacing:.5px; }
+      h1 { margin:0; font-size:46px; letter-spacing:-2px; }
+      .explain { max-width:650px; margin:0; font-size:25px; font-weight:700; line-height:1.45; text-align:right; }
+      main { margin-top:43px; border:5px solid var(--navy); background:var(--paper); box-shadow:9px 9px 0 var(--line); }
+      .bar { display:flex; align-items:center; gap:11px; height:58px; padding:0 23px; border-bottom:5px solid var(--navy); background:var(--pink); font:700 18px Consolas,"Courier New",monospace; }
+      .dot { width:17px; height:17px; border:2px solid var(--navy); border-radius:50%; background:var(--yellow); }.dot:nth-child(2) { background:var(--mint); }.dot:nth-child(3) { background:#9edcff; }
+      pre { margin:0; padding:43px 50px 45px; overflow:hidden; background:var(--code); color:var(--text); font:27px/1.55 Consolas,"Courier New","Malgun Gothic",monospace; letter-spacing:-.7px; white-space:pre-wrap; }
+      .comment { color:var(--comment); }.keyword { color:var(--keyword); }.number { color:var(--number); }.string { color:var(--string); }.function { color:#ffcf82; }.operator { color:#f6d77d; }
+      footer { display:flex; gap:22px; align-items:center; margin-top:36px; padding:23px 28px; border:4px solid var(--line); background:var(--mint); font-size:23px; font-weight:700; line-height:1.45; }
+      footer b { padding:5px 10px; border:2px solid var(--navy); background:var(--yellow); font:700 17px Consolas,"Courier New",monospace; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div><span class="tag">DISCRETE MATH · WEIGHTED GRAPH</span><h1>의상 간 어울림을 가중치 그래프로 만드는 코드</h1></div>
+      <p class="explain">의상은 정점, 의상 쌍의 호환 점수는 간선의 가중치로 저장합니다.</p>
+    </header>
+    <main>
+      <div class="bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span>src/App.jsx · compatibilityWeight / buildCompatibilityGraph</span></div>
+      <pre><span class="comment">// 색상·공통 상황·아우터 여부로 두 의상의 호환 가중치를 계산</span>
+<span class="keyword">function</span> <span class="function">compatibilityWeight</span>(first, second) {
+  <span class="keyword">let</span> weight = first.color === second.color ? <span class="number">5</span>
+    : neutralColors.has(first.color) || neutralColors.has(second.color) ? <span class="number">7</span>
+    : complementaryColors.has(<span class="string">`${first.color}-${second.color}`</span>) ? <span class="number">6</span> : <span class="number">2</span>;
+
+  weight += (first.occasions || []).filter((occasion) =&gt;
+    (second.occasions || []).includes(occasion)
+  ).length * <span class="number">2</span>;
+
+  <span class="keyword">return</span> weight + (first.category === <span class="string">"아우터"</span> || second.category === <span class="string">"아우터"</span> ? <span class="number">1</span> : <span class="number">0</span>);
+}
+
+<span class="comment">// 모든 의상 쌍을 양방향 간선으로 연결한 가중치 그래프 생성</span>
+<span class="keyword">function</span> <span class="function">buildCompatibilityGraph</span>(items) {
+  <span class="keyword">const</span> graph = <span class="keyword">new</span> Map(items.map((item) =&gt; [item.id, <span class="keyword">new</span> Map()]));
+  items.forEach((item, index) =&gt; items.slice(index + <span class="number">1</span>).forEach((other) =&gt; {
+    <span class="keyword">const</span> weight = compatibilityWeight(item, other);
+    graph.get(item.id).set(other.id, weight);
+    graph.get(other.id).set(item.id, weight);
+  }));
+  <span class="keyword">return</span> graph;
+}</pre>
+    </main>
+    <footer><b>보고서 설명</b><span>동일색·중립색·보색 여부와 공통 상황 수를 반영해 가중치를 정하고, 각 의상 쌍에 같은 값을 양방향으로 저장하여 무방향 가중치 그래프를 만든다.</span></footer>
+  </body>
+</html>
